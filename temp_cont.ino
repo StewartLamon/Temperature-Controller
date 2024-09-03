@@ -8,9 +8,15 @@ float P = 1;
 float I = 0.01;
 float Imax = 20;
 float fwd = 0;
-//float fwd = (196*ref-7272)*100.0/65535.0
 
-///////////////////////////////
+////////Calibration Parameters//////
+
+float boardLow = 0
+float boardHigh = 100
+float realLow = 0
+float realHigh = 100
+
+///////////////////////////////////
 
 float T = 500; //sample time in ms
 float prev_temp = 0;
@@ -66,6 +72,7 @@ void loop()
 void controller()
 {
   float temp = reading(); //measure temp in celsius
+  temp = calibratedTemp(temp);
   float error = ref - temp;
 
   if(abs(Ierror + I*error*1000/T) < Imax)
@@ -89,9 +96,7 @@ void controller()
   
   Serial.print(temp,3);
   Serial.print("\t");
-  Serial.print(output*100/65535);
-  Serial.print("\t");
-  Serial.println(Ierror);
+  Serial.println(output*100/65535);
 }
 
 void active_con() 
@@ -154,4 +159,11 @@ void analogWrite16(uint8_t pin, uint16_t val)
     case  9: OCR1A = val; break;
     case 10: OCR1B = val; break;
   }
+}
+
+float calibratedTemp(float temp)
+{
+  m = (boardLow-boardHigh)/(realLow-realHigh);
+  b = -m*boardLow+boardHigh;
+  return m*temp+b;
 }
