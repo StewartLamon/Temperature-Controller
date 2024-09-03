@@ -11,10 +11,10 @@ float fwd = 0;
 
 ////////Calibration Parameters//////
 
-float boardLow = 0
-float boardHigh = 100
-float realLow = 0
-float realHigh = 100
+float boardLow = 0;
+float boardHigh = 100;
+float realLow = 0;
+float realHigh = 100;
 
 ///////////////////////////////////
 
@@ -93,9 +93,11 @@ void controller()
     analogWrite16(heatupPin, 0);
     analogWrite16(cooldownPin, round(abs(output)));
   }
-  
+
+  Serial.print("temp(C): ");
   Serial.print(temp,3);
   Serial.print("\t");
+  Serial.print("Dutycycle(%): ");
   Serial.println(output*100/65535);
 }
 
@@ -163,7 +165,7 @@ void analogWrite16(uint8_t pin, uint16_t val)
 
 float calibratedTemp(float temp)
 {
-  m = (boardLow-boardHigh)/(realLow-realHigh);
-  b = -m*boardLow+boardHigh;
+  float m = (boardLow-boardHigh)/(realLow-realHigh);
+  float b = -m*boardLow+realLow;
   return m*temp+b;
 }
